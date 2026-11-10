@@ -22,3 +22,10 @@ export const Castling = {
   BK: 0b0100,
   BQ: 0b1000,
 } as const;
+
+export const Side = {
+  White: 0,
+  Black: 1,
+} as const;
+
+export type Side = (typeof Side)[keyof typeof Side];
