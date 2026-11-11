@@ -1,3 +1,4 @@
+import { getFileFromSquare, getRankFromSquare } from "./helpers.ts";
 import { Castling, Piece } from "./pieces.ts";
 
 const FEN_PIECE_CHARS = "PNBRQKpnbrqk"; // indexOf(ch) + 1 === Piece value
@@ -139,8 +140,8 @@ export function unParseCastling(castling: number) {
 export function unParseSquare(square: number): string {
   if (square === -1) return "-";
 
-  const rank = Math.floor(square / 8) + 1;
-  const file = square % 8;
+  const rank = getRankFromSquare(square) + 1;
+  const file = getFileFromSquare(square);
 
   const fileString = String.fromCharCode(file + 97);
 

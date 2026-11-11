@@ -16,6 +16,18 @@ export const Piece = {
 
 export type Piece = (typeof Piece)[keyof typeof Piece];
 
+export const PieceType = {
+  Empty: 0,
+  Pawn: 1,
+  Knight: 2,
+  Bishop: 3,
+  Rook: 4,
+  Queen: 5,
+  King: 6,
+} as const;
+
+export type PieceType = (typeof PieceType)[keyof typeof PieceType];
+
 export const Castling = {
   WK: 0b0001,
   WQ: 0b0010,
@@ -29,3 +41,11 @@ export const Side = {
 } as const;
 
 export type Side = (typeof Side)[keyof typeof Side];
+
+export function getPieceTypeOnSquare(board: Int8Array, square: number) {
+  const piece = board[square];
+
+  if (piece === Piece.Empty) return PieceType.Empty;
+
+  return (((piece - 1) % 6) + 1) as PieceType;
+}
