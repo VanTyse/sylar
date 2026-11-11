@@ -19,6 +19,8 @@ import { addCastlingMoves } from "./castling.ts";
 import { addPawnMoves } from "./pawns.ts";
 import { isEnemy } from "./utils.ts";
 
+export const MAX_MOVES = 256;
+
 // generate moves for knight and king
 export function addStepMoves(
   position: Position,

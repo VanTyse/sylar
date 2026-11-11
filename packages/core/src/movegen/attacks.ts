@@ -113,3 +113,9 @@ function slide(
 
   return false;
 }
+
+export function findKingSquare(position: Position, side: Side): number {
+  const king = side === Side.Black ? Piece.BKing : Piece.WKing;
+
+  return position.board.indexOf(king);
+}
