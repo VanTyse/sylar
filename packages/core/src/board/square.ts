@@ -1,3 +1,5 @@
+import { Side } from "./piece.ts";
+
 export function getFileFromSquare(square: number) {
   return square % 8;
 }
@@ -43,4 +45,18 @@ export function isOnBoardStep(
   return (
     toSquare >= 0 && toSquare < 64 && Math.abs(fromFile - toFile) <= maxFileDiff
   );
+}
+
+export function isStartingSquare(fromSquare: number, sideToMove: Side) {
+  const rank = getRankFromSquare(fromSquare);
+
+  if (sideToMove === Side.White) return rank === 1;
+  else return rank === 6;
+}
+
+export function isPromotionSquare(toSquare: number, sideToMove: Side) {
+  const rank = getRankFromSquare(toSquare);
+
+  if (sideToMove === Side.White) return rank === 7;
+  else return rank === 0;
 }

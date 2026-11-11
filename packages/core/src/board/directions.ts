@@ -10,6 +10,10 @@ export const PAWN_ATTACK_OFFSETS = {
   [Side.Black]: [-7, -9],
   [Side.White]: [7, 9],
 } as const;
+export const PAWN_MOVEMENT_OFFSET = {
+  [Side.Black]: -8,
+  [Side.White]: 8,
+} as const;
 
 export const KING_MAX_FILE_DIFF = 1;
 export const KNIGHT_MAX_FILE_DIFF = 2;
