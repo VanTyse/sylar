@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
+import { Piece, Side } from "../board/piece.ts";
 import { Position } from "./position.ts";
-import { Piece, Side } from "./pieces.ts";
 
 const START = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
 

@@ -1,13 +1,12 @@
+import { Side } from "../board/piece.ts";
+import { parseSquare, unParseSquare } from "../board/square.ts";
 import {
   parseCastling,
   parsePlacement,
-  parseSquare,
   unParseCastling,
   unParsePlacement,
-  unParseSquare,
   splitFen,
-} from "./fen-parser-utils.ts";
-import { Side } from "./pieces.ts";
+} from "./fen.ts";
 
 export class Position {
   board = new Int8Array(64);

@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { unParseSquare } from "./fen-parser-utils.ts";
-import { isSquareAttacked } from "./piece-movement.ts";
-import { Side } from "./pieces.ts";
-import { Position } from "./position.ts";
+import { Side } from "../board/piece.ts";
+import { unParseSquare } from "../board/square.ts";
+import { Position } from "../position/position.ts";
+import { isSquareAttacked } from "./attacks.ts";
 
 /**
  * Every square attacked by `side`, as sorted square names.

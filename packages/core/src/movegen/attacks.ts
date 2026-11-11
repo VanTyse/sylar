@@ -6,24 +6,10 @@ import {
   KNIGHT_MOVEMENT_OFFSETS,
   PAWN_ATTACK_OFFSETS,
   ROOK_MOVEMENT_DIRECTIONS,
-} from "./constants.ts";
-import { getFileFromSquare } from "./helpers.ts";
-import { Piece, Side } from "./pieces.ts";
-import type { Position } from "./position.ts";
-
-//prevents wraparound jumps by comparing how many files a piece can jump by in one step
-export function isOnBoardStep(
-  fromSquare: number,
-  toSquare: number,
-  maxFileDiff: number,
-): boolean {
-  const fromFile = getFileFromSquare(fromSquare);
-  const toFile = getFileFromSquare(toSquare);
-
-  return (
-    toSquare >= 0 && toSquare < 64 && Math.abs(fromFile - toFile) <= maxFileDiff
-  );
-}
+} from "../board/directions.ts";
+import { Piece, Side } from "../board/piece.ts";
+import { isOnBoardStep } from "../board/square.ts";
+import type { Position } from "../position/position.ts";
 
 // the idea is to work out from the square until we find a piece that can land on the square
 export function isSquareAttacked(
@@ -49,9 +35,9 @@ export function isSquareAttacked(
   const pawnOffsets = PAWN_ATTACK_OFFSETS[attackingSide];
 
   for (const offset of pawnOffsets) {
-    // since offsets are the directions the pawn attcks in, 
+    // since offsets are the directions the pawn attcks in,
     // subtracting one goes back to where the pawn would be
-    const from = square - offset; 
+    const from = square - offset;
 
     if (isOnBoardStep(square, from, 1) && board[from] === attackingPawn)
       return true;

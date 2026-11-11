@@ -8,7 +8,7 @@
  * bit 3 (flags 8–15) = promotion
  */
 
-import { unParseSquare } from "./fen-parser-utils.ts";
+import { unParseSquare } from "../board/square.ts";
 
 export type Move = number;
 

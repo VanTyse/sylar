@@ -1,5 +1,5 @@
-import { getFileFromSquare, getRankFromSquare } from "./helpers.ts";
-import { Castling, Piece } from "./pieces.ts";
+import { Piece } from "../board/piece.ts";
+import { Castling } from "./castling.ts";
 
 const FEN_PIECE_CHARS = "PNBRQKpnbrqk"; // indexOf(ch) + 1 === Piece value
 
@@ -52,20 +52,6 @@ export function parseCastling(castling: string): number {
   }
 
   return value;
-}
-
-//example is converting a1 to 0 and e3 to 20
-export function parseSquare(square: string): number {
-  if (square === "-") return -1;
-
-  const file = square.charCodeAt(0) - 97; // "a" -> 0
-  const rank = square.charCodeAt(1) - 49; // "1" -> 0
-
-  if (square.length !== 2 || file < 0 || file > 7 || rank < 0 || rank > 7) {
-    throw new Error(`Bad square: ${square}`);
-  }
-
-  return rank * 8 + file;
 }
 
 export function splitFen(
@@ -135,15 +121,4 @@ export function unParseCastling(castling: number) {
     if (value & castling) return acc + key;
     else return acc;
   }, "");
-}
-
-export function unParseSquare(square: number): string {
-  if (square === -1) return "-";
-
-  const rank = getRankFromSquare(square) + 1;
-  const file = getFileFromSquare(square);
-
-  const fileString = String.fromCharCode(file + 97);
-
-  return `${fileString}${rank}`;
 }

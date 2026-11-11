@@ -1,1 +1,1 @@
-export { Position } from "./position.ts";
+export { Position } from "./position/position.ts";

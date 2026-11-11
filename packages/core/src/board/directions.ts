@@ -1,4 +1,4 @@
-import { Side } from "./pieces.ts";
+import { Side } from "./piece.ts";
 
 export const KNIGHT_MOVEMENT_OFFSETS = [
   6, -6, 10, -10, 15, -15, 17, -17,

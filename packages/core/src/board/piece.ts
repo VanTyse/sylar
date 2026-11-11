@@ -28,13 +28,6 @@ export const PieceType = {
 
 export type PieceType = (typeof PieceType)[keyof typeof PieceType];
 
-export const Castling = {
-  WK: 0b0001,
-  WQ: 0b0010,
-  BK: 0b0100,
-  BQ: 0b1000,
-} as const;
-
 export const Side = {
   White: 0,
   Black: 1,
@@ -48,4 +41,8 @@ export function getPieceTypeOnSquare(board: Int8Array, square: number) {
   if (piece === Piece.Empty) return PieceType.Empty;
 
   return (((piece - 1) % 6) + 1) as PieceType;
+}
+
+export function getPieceSide(piece: Piece) {
+  return piece >= Piece.BPawn ? Side.Black : Side.White; //only valid for non-empty squares
 }
