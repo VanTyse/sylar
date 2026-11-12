@@ -119,3 +119,10 @@ export function findKingSquare(position: Position, side: Side): number {
 
   return position.board.indexOf(king);
 }
+
+export function isInCheck(position: Position, side: Side) {
+  const kingSquare = findKingSquare(position, side);
+  const opposingSide = (side ^ 1) as Side;
+
+  return isSquareAttacked(position, kingSquare, opposingSide);
+}

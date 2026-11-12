@@ -1,5 +1,5 @@
 import { Side } from "../board/piece.ts";
-import { findKingSquare, isSquareAttacked } from "./attacks.ts";
+import { isInCheck } from "./attacks.ts";
 import { generateMoves, MAX_MOVES } from "./generate.ts";
 import type { Position } from "../position/position.ts";
 
@@ -26,13 +26,7 @@ export function perft(position: Position, depth: number): number {
 
     position.makeMove(move);
 
-    if (
-      !isSquareAttacked(
-        position,
-        findKingSquare(position, sideToMove),
-        opposingSide,
-      )
-    ) {
+    if (!isInCheck(position, sideToMove)) {
       nodes += perft(position, depth - 1);
     }
 

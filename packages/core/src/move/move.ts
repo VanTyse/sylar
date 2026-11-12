@@ -80,3 +80,5 @@ export function formatMoveToUci(encodedMove: Move): string {
       : "")
   );
 }
+
+export const NO_MOVE = 0;
