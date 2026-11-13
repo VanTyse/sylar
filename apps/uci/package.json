@@ -1,0 +1,14 @@
+{
+  "name": "@sylar/uci",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Sylar chess engine speaking UCI over stdin/stdout",
+  "type": "module",
+  "scripts": {
+    "start": "node src/main.ts",
+    "typecheck": "tsc"
+  },
+  "dependencies": {
+    "@sylar/core": "workspace:*"
+  }
+}
