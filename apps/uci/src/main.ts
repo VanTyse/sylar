@@ -5,8 +5,9 @@
  * in the UCI protocol. Only what a GUI needs to play a game is supported:
  * uci, isready, setoption (Depth), ucinewgame, position, go, quit.
  *
- * The engine searches to a fixed depth and ignores clock times for now, so
- * `stop` has no effect: the search always runs to completion.
+ * There is no iterative deepening yet, so a search can't be stopped early and
+ * `stop` has no effect. Instead, `go` picks a depth up front that should fit
+ * in the time available (see chooseDepth).
  */
 import { createInterface } from "node:readline";
 import {
@@ -18,9 +19,20 @@ import {
   searchRoot,
 } from "@sylar/core";
 
+// bump on every engine change, so ratings can be traced back to a version
+const VERSION = "0.1.0";
+
 const START_FEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
 const DEFAULT_DEPTH = 5;
 const MAX_DEPTH = 10;
+
+// assume this many moves are left when splitting the clock
+const MOVES_TO_GO = 30;
+
+// Time (ms) a search needs to finish each depth in the worst case, indexed by
+// depth. Measured on busy middlegames (depth 4 ~70 ms, depth 5 ~1.35 s) with
+// a safety margin. Re-measure whenever search changes.
+const WORST_CASE_MS = [0, 5, 10, 30, 200, 2500];
 
 // mate scores are MATE_SCORE minus the plies to mate, so anything this
 // close to MATE_SCORE is a forced mate rather than a material score
@@ -77,12 +89,9 @@ function formatScore(score: number): string {
   return `cp ${score}`;
 }
 
-/** `go [depth N] [...]`: other parameters (wtime, movetime, ...) are ignored for now. */
+/** `go [depth N | movetime T | wtime W btime B winc WI binc BI | infinite]` */
 function handleGo(tokens: string[]): void {
-  const depthIndex = tokens.indexOf("depth");
-  const searchDepth =
-    depthIndex === -1 ? depth : clampDepth(Number(tokens[depthIndex + 1]));
-
+  const searchDepth = chooseDepth(tokens);
   const start = performance.now();
   const { bestMove, score } = searchRoot(position, searchDepth);
   const ms = Math.round(performance.now() - start);
@@ -120,13 +129,58 @@ function clampDepth(value: number): number {
   return Math.min(Math.max(value, 1), MAX_DEPTH);
 }
 
+/** Reads the number after `name` in a `go` command, e.g. `wtime 60000`. */
+function getGoParam(tokens: string[], name: string): number | undefined {
+  const index = tokens.indexOf(name);
+  if (index === -1) return undefined;
+
+  const value = Number(tokens[index + 1]);
+
+  return Number.isFinite(value) ? value : undefined;
+}
+
+/**
+ * Picks the deepest search expected to finish within this move's time budget,
+ * never deeper than the Depth option.
+ *
+ * - `go depth N` searches exactly N.
+ * - `go movetime T` gives a budget of T ms.
+ * - `go wtime/btime [winc/binc]` gives our clock / MOVES_TO_GO plus most of
+ *   the increment.
+ * - `go` alone or `go infinite` uses the Depth option.
+ */
+function chooseDepth(tokens: string[]): number {
+  const fixedDepth = getGoParam(tokens, "depth");
+  if (fixedDepth !== undefined) return clampDepth(fixedDepth);
+
+  const white = position.sideToMove === 0;
+  const clock = getGoParam(tokens, white ? "wtime" : "btime");
+  const increment = getGoParam(tokens, white ? "winc" : "binc") ?? 0;
+  const moveTime = getGoParam(tokens, "movetime");
+
+  let budget: number;
+
+  if (moveTime !== undefined) budget = moveTime;
+  else if (clock !== undefined) budget = clock / MOVES_TO_GO + increment * 0.75;
+  else return depth;
+
+  let chosen = 1;
+  const deepest = Math.min(depth, WORST_CASE_MS.length - 1);
+
+  for (let d = 1; d <= deepest; d++) {
+    if (WORST_CASE_MS[d] <= budget) chosen = d;
+  }
+
+  return chosen;
+}
+
 function handleCommand(line: string): void {
   const tokens = line.trim().split(/\s+/);
   const [command, ...args] = tokens;
 
   switch (command) {
     case "uci":
-      send("id name Sylar");
+      send(`id name Sylar ${VERSION}`);
       send("id author Vantyse");
       send(
         `option name Depth type spin default ${DEFAULT_DEPTH} min 1 max ${MAX_DEPTH}`,
